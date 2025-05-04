@@ -51,7 +51,8 @@ class _GamePanelPageState extends State<GamePanelPage> {
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            title: Text('$currentPlayer Wins!'),
+            title: const Text('Congratulations !!!'),
+            content: Text('$currentPlayer won (+ 3 points)'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -64,20 +65,23 @@ class _GamePanelPageState extends State<GamePanelPage> {
                     }
                     round++;
                     board = List.filled(9, '');
-                    // winner starts again
+                    // Winner başlar!
                   });
                 },
-                child: const Text('OK'),
+                child: const Text('Ok'),
               ),
             ],
           ),
         );
-      } else if (!board.contains('')) {
+      }
+      else if (!board.contains('')) {
+        // Draw
         // Draw
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            title: const Text('Draw!'),
+            title: const Text('Draw !!!'),
+            content: const Text('One point for each player'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -90,11 +94,12 @@ class _GamePanelPageState extends State<GamePanelPage> {
                     isPlayer1Turn = true;
                   });
                 },
-                child: const Text('OK'),
+                child: const Text('Ok'),
               ),
             ],
           ),
         );
+
       } else {
         isPlayer1Turn = !isPlayer1Turn;
       }
@@ -127,22 +132,39 @@ class _GamePanelPageState extends State<GamePanelPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Exit Game?'),
-        content: const Text('Do you want to exit and return winner info?'),
+        title: const Text('Are you sure to exit?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), // No
+            onPressed: () => Navigator.pop(context), // No: sadece dialog kapanır
             child: const Text('No'),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
-              String winnerName = score1 > score2 ? widget.player1 : widget.player2;
-              String winnerSymbol = score1 > score2 ? 'X' : 'O';
-              int winnerScore = score1 > score2 ? score1 : score2;
+              Navigator.pop(context); // dialog kapanır
+
+              // kazananı kontrol et
+              if (score1 == score2) {
+                // berabereyse kimse eklenmesin
+                Navigator.pop(context);
+                return;
+              }
+
+              String winnerName;
+              String winnerSymbol;
+              int winnerScore;
+
+              if (score1 > score2) {
+                winnerName = widget.player1;
+                winnerSymbol = 'X';
+                winnerScore = score1;
+              } else {
+                winnerName = widget.player2;
+                winnerSymbol = 'O';
+                winnerScore = score2;
+              }
 
               String heroEntry = '$winnerName ($winnerSymbol) - $winnerScore';
-              Navigator.pop(context, heroEntry); // Go back to players_info.dart
+              Navigator.pop(context, heroEntry);
             },
             child: const Text('Yes'),
           ),
@@ -150,6 +172,7 @@ class _GamePanelPageState extends State<GamePanelPage> {
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -215,21 +238,25 @@ class _GamePanelPageState extends State<GamePanelPage> {
 
             const SizedBox(height: 4),
             // Turn bilgisi
-            Text.rich(
-              TextSpan(
-                text: 'Turn: ',
-                style: const TextStyle(fontSize: 16),
-                children: [
-                  TextSpan(
-                    text: '$currentPlayer ($currentSymbol)',
-                    style: TextStyle(
-                      color: currentColor,
-                      fontWeight: FontWeight.bold,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text.rich(
+                TextSpan(
+                  text: 'Turn: ',
+                  style: const TextStyle(fontSize: 16),
+                  children: [
+                    TextSpan(
+                      text: '$currentPlayer ($currentSymbol)',
+                      style: TextStyle(
+                        color: currentColor,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
+
 
             const SizedBox(height: 12),
 

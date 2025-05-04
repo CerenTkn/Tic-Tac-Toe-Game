@@ -153,14 +153,32 @@ class _PlayersInfoPageState extends State<PlayersInfoPage> {
             const SizedBox(height: 10),
 
             Expanded(
-              child: heroes.isEmpty
-                  ? const Center(child: Text('No heroes yet.'))
-                  : ListView.builder(
+              child : ListView.builder(
                 itemCount: heroes.length,
                 itemBuilder: (context, index) {
-                  final hero = heroes[index];
+                  final entry = heroes[index];
+
+                  // Örn: "Player 1 (X) - 4"
+                  String name = '';
+                  String symbol = '';
+                  String score = '';
+
+                  try {
+                    final regex = RegExp(r'^(.*?)\s+\((.*?)\)\s*-\s*(\d+)$');
+                    final match = regex.firstMatch(entry);
+                    if (match != null) {
+                      name = match.group(1)!;
+                      symbol = match.group(2)!;
+                      score = match.group(3)!;
+                    } else {
+                      name = entry; // fallback
+                    }
+                  } catch (e) {
+                    name = entry; // fallback
+                  }
+
                   return Dismissible(
-                    key: Key(hero + index.toString()),
+                    key: Key(entry + index.toString()),
                     direction: DismissDirection.startToEnd,
                     onDismissed: (_) {
                       setState(() {
@@ -173,11 +191,46 @@ class _PlayersInfoPageState extends State<PlayersInfoPage> {
                       padding: const EdgeInsets.only(left: 20),
                       child: const Icon(Icons.delete, color: Colors.white),
                     ),
-                    child: ListTile(title: Text(hero)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.star, color: Colors.orange, size: 28),
+                          const SizedBox(width: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                name,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                              Text(
+                                symbol,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: symbol == 'X'
+                                      ? Colors.blue
+                                      : (symbol == 'O' ? Colors.red : Colors.black),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          Text(
+                            score,
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 },
               ),
+
             ),
+
           ],
         ),
       ),

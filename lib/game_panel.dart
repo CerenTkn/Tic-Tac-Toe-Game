@@ -154,36 +154,97 @@ class _GamePanelPageState extends State<GamePanelPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFEFF6E0),
       appBar: AppBar(
-        title: const Text('Tic Tac Toe'),
-        backgroundColor: Colors.teal,
+        backgroundColor: Colors.lightGreen,
+        title: const Text('Game Panel'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Text('Round: $round', style: const TextStyle(fontSize: 20)),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            // Skorlar
+            Column(
               children: [
-                Text('${widget.player1}: $score1', style: const TextStyle(fontSize: 18, color: Colors.blue)),
-                Text('${widget.player2}: $score2', style: const TextStyle(fontSize: 18, color: Colors.red)),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: 'Player 1 Score: ',
+                        style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: '$score1',
+                        style: const TextStyle(color: Colors.blue),
+                      ),
+                    ],
+                  ),
+                  style: const TextStyle(fontSize: 18),
+                ),
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: 'Player 2 Score: ',
+                        style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: '$score2',
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ],
+                  ),
+                  style: const TextStyle(fontSize: 18),
+                ),
               ],
             ),
-            const SizedBox(height: 20),
 
-            // 3x3 Board
+            const SizedBox(height: 8),
+            const Divider(thickness: 1, color: Colors.black45),
+
+            const SizedBox(height: 8),
+            // Round bilgisi
+            Text(
+              'Round: $round',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 4),
+            // Turn bilgisi
+            Text.rich(
+              TextSpan(
+                text: 'Turn: ',
+                style: const TextStyle(fontSize: 16),
+                children: [
+                  TextSpan(
+                    text: '$currentPlayer ($currentSymbol)',
+                    style: TextStyle(
+                      color: currentColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Oyun alanı
             Expanded(
               child: GridView.builder(
                 itemCount: 9,
-                gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                ),
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () => handleTap(index),
                     child: Container(
-                      margin: const EdgeInsets.all(4),
+                      margin: const EdgeInsets.all(2),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border.all(color: Colors.black),
@@ -203,17 +264,29 @@ class _GamePanelPageState extends State<GamePanelPage> {
               ),
             ),
 
-            // Reset ve Exit Butonları
+            const SizedBox(height: 12),
+
+            // Butonlar
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   onPressed: resetGame,
-                  child: const Text('Reset'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightGreen,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                  child: const Text('Reset', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 ElevatedButton(
                   onPressed: confirmExit,
-                  child: const Text('Exit'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightGreen,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                  child: const Text('Exit', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ],
             ),

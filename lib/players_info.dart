@@ -9,40 +9,30 @@ class PlayersInfoPage extends StatefulWidget {
 }
 
 class _PlayersInfoPageState extends State<PlayersInfoPage> {
-  String player1 = 'Player 1';
-  String player2 = 'Player 2';
-  final List<String> heroes = []; // Kazananlar burada listelenecek
+  final TextEditingController player1Controller = TextEditingController();
+  final TextEditingController player2Controller = TextEditingController();
 
-  final TextEditingController controller1 = TextEditingController();
-  final TextEditingController controller2 = TextEditingController();
+  List<String> heroes = [];
 
   void swapPlayers() {
     setState(() {
-      final temp = player1;
-      player1 = player2;
-      player2 = temp;
+      final temp = player1Controller.text;
+      player1Controller.text = player2Controller.text;
+      player2Controller.text = temp;
     });
   }
 
-  void updatePlayerNames() {
-    setState(() {
-      if (controller1.text.isNotEmpty) player1 = controller1.text;
-      if (controller2.text.isNotEmpty) player2 = controller2.text;
-    });
-  }
-
-  Future<void> goToGamePanel() async {
+  Future<void> navigateToGame() async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => GamePanelPage(
-          player1: player1,
-          player2: player2,
+          player1: player1Controller.text.isEmpty ? 'Player 1' : player1Controller.text,
+          player2: player2Controller.text.isEmpty ? 'Player 2' : player2Controller.text,
         ),
       ),
     );
 
-    // Sonuç varsa kahraman listesine ekle
     if (result != null && result is String) {
       setState(() {
         heroes.add(result);
@@ -50,53 +40,121 @@ class _PlayersInfoPageState extends State<PlayersInfoPage> {
     }
   }
 
+  Widget buildPlayerCard(TextEditingController controller, Color color, String label) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(50),
+        boxShadow: const [
+          BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(2, 2)),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center, // TOP DEĞİL, ORTALA
+        children: [
+          // Gri kutu içindeki kişi ikonu
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: const Icon(Icons.person, size: 18, color: Colors.black54),
+          ),
+          const SizedBox(width: 12),
+
+          // TextField + altında etiket yazısı
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: controller,
+                  style: const TextStyle(color: Colors.black),
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    isDense: true,
+                    contentPadding: EdgeInsets.only(bottom: 6),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  style: const TextStyle(color: Colors.black54, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+
+          // Büyük ve ortalanmış renkli daire
+          CircleAvatar(
+            backgroundColor: color,
+            radius: 16, // büyütüldü!
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFEFF6E0),
       appBar: AppBar(
-        title: const Text('Players Info'),
-        backgroundColor: Colors.blueGrey,
+        title: const Text('Players Panel'),
+        backgroundColor: Colors.lightGreen,
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Player 1 Card
-            GestureDetector(
-              onTap: () => _showNameDialog(controller1, 1),
-              child: Card(
-                child: ListTile(
-                  title: Text(player1),
-                  subtitle: const Text('Tap to edit name'),
-                ),
-              ),
-            ),
+            const Divider(thickness: 1, color: Colors.black), // üst çizgi
 
-            // Swap IconButton
-            IconButton(
-              icon: const Icon(Icons.swap_horiz),
-              onPressed: swapPlayers,
-            ),
+            buildPlayerCard(player1Controller, Colors.blue, 'Player 1'),
 
-            // Player 2 Card
-            GestureDetector(
-              onTap: () => _showNameDialog(controller2, 2),
-              child: Card(
-                child: ListTile(
-                  title: Text(player2),
-                  subtitle: const Text('Tap to edit name'),
-                ),
-              ),
-            ),
+            const SizedBox(height: 4),
+
+            const Icon(Icons.unfold_more, size: 30, color: Colors.black), // Dikey çift ok
+
+            const SizedBox(height: 4),
+
+            buildPlayerCard(player2Controller, Colors.red, 'Player 2'),
+
+            const Divider(thickness: 1, color: Colors.black), // alt çizgi
 
             const SizedBox(height: 20),
-            const Text('Heroes List:'),
+
+            const Align(
+              alignment: Alignment.center,
+              child: Text(
+                'Heros List:',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ),
+
             const SizedBox(height: 10),
 
-            // Heroes List
             Expanded(
               child: heroes.isEmpty
-                  ? const Text('No heroes yet.')
+                  ? const Center(child: Text('No heroes yet.'))
                   : ListView.builder(
                 itemCount: heroes.length,
                 itemBuilder: (context, index) {
@@ -123,33 +181,10 @@ class _PlayersInfoPageState extends State<PlayersInfoPage> {
           ],
         ),
       ),
-
-      // Floating Action Button →
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.arrow_forward),
-        onPressed: () {
-          updatePlayerNames();
-          goToGamePanel();
-        },
-      ),
-    );
-  }
-
-  void _showNameDialog(TextEditingController controller, int playerNumber) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Enter name for Player $playerNumber'),
-        content: TextField(controller: controller),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              updatePlayerNames();
-            },
-            child: const Text('OK'),
-          )
-        ],
+        backgroundColor: Colors.green,
+        onPressed: navigateToGame,
+        child: const Icon(Icons.arrow_forward, color: Colors.white),
       ),
     );
   }

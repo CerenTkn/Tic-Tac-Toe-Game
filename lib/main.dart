@@ -6,7 +6,7 @@ void main() {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Color(0xFF689F38),
-      statusBarIconBrightness: Brightness.dark, // İkonlar siyah olur
+      statusBarIconBrightness: Brightness.dark,
     ),
   );
 

@@ -65,7 +65,6 @@ class _GamePanelPageState extends State<GamePanelPage> {
                     }
                     round++;
                     board = List.filled(9, '');
-                    // Winner başlar!
                   });
                 },
                 child: const Text('Ok'),
@@ -75,7 +74,6 @@ class _GamePanelPageState extends State<GamePanelPage> {
         );
       }
       else if (!board.contains('')) {
-        // Draw
         // Draw
         showDialog(
           context: context,
@@ -135,16 +133,14 @@ class _GamePanelPageState extends State<GamePanelPage> {
         title: const Text('Are you sure to exit?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), // No: sadece dialog kapanır
+            onPressed: () => Navigator.pop(context),
             child: const Text('No'),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // dialog kapanır
+              Navigator.pop(context);
 
-              // kazananı kontrol et
               if (score1 == score2) {
-                // berabereyse kimse eklenmesin
                 Navigator.pop(context);
                 return;
               }
@@ -176,6 +172,8 @@ class _GamePanelPageState extends State<GamePanelPage> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final boardSize = screenHeight * 0.45;
     return Scaffold(
       backgroundColor: const Color(0xFFEFF6E0),
       appBar: AppBar(
@@ -190,7 +188,7 @@ class _GamePanelPageState extends State<GamePanelPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Skorlar
+
             Column(
               children: [
                 Text.rich(
@@ -226,10 +224,10 @@ class _GamePanelPageState extends State<GamePanelPage> {
               ],
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             const Divider(thickness: 1, color: Colors.black45),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
             // Round bilgisi
             Text(
               'Round: $round',
@@ -237,13 +235,12 @@ class _GamePanelPageState extends State<GamePanelPage> {
             ),
 
             const SizedBox(height: 4),
-            // Turn bilgisi
             Align(
               alignment: Alignment.centerLeft,
               child: Text.rich(
                 TextSpan(
                   text: 'Turn: ',
-                  style: const TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   children: [
                     TextSpan(
                       text: '$currentPlayer ($currentSymbol)',
@@ -260,18 +257,25 @@ class _GamePanelPageState extends State<GamePanelPage> {
 
             const SizedBox(height: 12),
 
-            // Oyun alanı
-            Expanded(
+            const Divider(thickness: 1, color: Colors.black45),
+
+            SizedBox(
+              width: boardSize,
+              height: boardSize,
               child: GridView.builder(
-                itemCount: 9,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
+                  mainAxisSpacing: 0,
+                  crossAxisSpacing: 0,
+                  childAspectRatio: 1,
                 ),
+                itemCount: 9,
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () => handleTap(index),
                     child: Container(
-                      margin: const EdgeInsets.all(2),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border.all(color: Colors.black),
@@ -280,7 +284,8 @@ class _GamePanelPageState extends State<GamePanelPage> {
                         child: Text(
                           board[index],
                           style: TextStyle(
-                            fontSize: 40,
+                            fontSize: 60,
+                            fontWeight: FontWeight.bold,
                             color: board[index] == 'X' ? Colors.blue : Colors.red,
                           ),
                         ),
@@ -290,10 +295,9 @@ class _GamePanelPageState extends State<GamePanelPage> {
                 },
               ),
             ),
+          const SizedBox(height: 4),
+            const Divider(thickness: 1, color: Colors.black45),
 
-            const SizedBox(height: 12),
-
-            // Butonlar
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [

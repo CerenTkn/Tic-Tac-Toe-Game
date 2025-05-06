@@ -52,21 +52,19 @@ class _PlayersInfoPageState extends State<PlayersInfoPage> {
         ],
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center, // TOP DEĞİL, ORTALA
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Gri kutu içindeki kişi ikonu
           Container(
-            width: 30,
-            height: 30,
+            width: 20,
+            height: 20,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: Colors.black26,
               borderRadius: BorderRadius.circular(4),
             ),
-            child: const Icon(Icons.person, size: 18, color: Colors.black54),
+            child: const Icon(Icons.person, size: 15, color: Colors.white),
           ),
           const SizedBox(width: 12),
 
-          // TextField + altında etiket yazısı
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,18 +95,16 @@ class _PlayersInfoPageState extends State<PlayersInfoPage> {
               ],
             ),
           ),
+          const SizedBox(width: 12),
 
-          // Büyük ve ortalanmış renkli daire
           CircleAvatar(
             backgroundColor: color,
-            radius: 16, // büyütüldü!
+            radius: 16,
           ),
         ],
       ),
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -123,29 +119,33 @@ class _PlayersInfoPageState extends State<PlayersInfoPage> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const Divider(thickness: 1, color: Colors.black), // üst çizgi
+            const Divider(thickness: 1, color: Colors.black),
 
             buildPlayerCard(player1Controller, Colors.blue, 'Player 1'),
 
             const SizedBox(height: 4),
 
-            const Icon(Icons.unfold_more, size: 30, color: Colors.black), // Dikey çift ok
-
+            IconButton(
+              onPressed: swapPlayers,
+              icon: Transform.rotate(
+                angle: 1.5708,
+                child: const Icon(Icons.compare_arrows, size: 32, color: Colors.black),
+              ),
+            ),
             const SizedBox(height: 4),
 
             buildPlayerCard(player2Controller, Colors.red, 'Player 2'),
 
             const Divider(thickness: 1, color: Colors.black), // alt çizgi
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
 
             const Align(
               alignment: Alignment.center,
               child: Text(
                 'Heros List:',
                 style: TextStyle(
-                  fontSize: 18,
-                  fontFamily: 'monospace',
+                  fontSize: 18
                 ),
               ),
             ),
@@ -158,7 +158,6 @@ class _PlayersInfoPageState extends State<PlayersInfoPage> {
                 itemBuilder: (context, index) {
                   final entry = heroes[index];
 
-                  // Örn: "Player 1 (X) - 4"
                   String name = '';
                   String symbol = '';
                   String score = '';
@@ -171,18 +170,18 @@ class _PlayersInfoPageState extends State<PlayersInfoPage> {
                       symbol = match.group(2)!;
                       score = match.group(3)!;
                     } else {
-                      name = entry; // fallback
+                      name = entry;
                     }
                   } catch (e) {
-                    name = entry; // fallback
+                    name = entry;
                   }
 
                   return Dismissible(
-                    key: Key(entry + index.toString()),
+                    key: Key(entry),
                     direction: DismissDirection.startToEnd,
                     onDismissed: (_) {
                       setState(() {
-                        heroes.removeAt(index);
+                        heroes.remove(entry);
                       });
                     },
                     background: Container(
@@ -234,11 +233,19 @@ class _PlayersInfoPageState extends State<PlayersInfoPage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
-        onPressed: navigateToGame,
-        child: const Icon(Icons.arrow_forward, color: Colors.white),
+      floatingActionButton: SizedBox(
+        width: 56,
+        height: 56,
+        child: FloatingActionButton(
+          onPressed: navigateToGame,
+          backgroundColor: Colors.green,
+          elevation: 4,
+          shape: const CircleBorder(),
+          child: const Icon(Icons.arrow_forward, color: Colors.white),
+        ),
       ),
+
+
     );
   }
 }
